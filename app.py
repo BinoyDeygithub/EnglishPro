@@ -7,11 +7,11 @@ from email.mime.text import MIMEText
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-RAZORPAY_KEY_ID = "rzp_live_R2HYh1NSRFpo3u"
-RAZORPAY_KEY_SECRET = "VwJuBCjJ8qpORiCKreedSc4o"
+RAZORPAY_KEY_ID =os.environ.get( "rzp_live_R2HYh1NSRFpo3u")
+RAZORPAY_KEY_SECRET = os.environ.get("VwJuBCjJ8qpORiCKreedSc4o")
 
-SMTP_EMAIL = "spokenenglishmaterialcourseeng@gmail.com"
-SMTP_PASSWORD = "Binoy@123"
+SMTP_EMAIL = os.environ.get("spokenenglishmaterialcourseeng@gmail.com")
+SMTP_PASSWORD = os.environ.get("Binoy@123")
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
