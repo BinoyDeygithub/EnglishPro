@@ -3,23 +3,26 @@ from flask import Flask, render_template, request, jsonify
 import razorpay
 import smtplib
 from email.mime.text import MIMEText
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'VwJuBCjJ8qpORiCKreedSc4o'
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'default_secret')
 
-RAZORPAY_KEY_ID =os.environ.get( "rzp_live_R2HYh1NSRFpo3u")
-RAZORPAY_KEY_SECRET = os.environ.get("VwJuBCjJ8qpORiCKreedSc4o")
+RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET")
 
-SMTP_EMAIL = os.environ.get("spokenenglishmaterialcourseeng@gmail.com")
-SMTP_PASSWORD = os.environ.get("Binoy@123")
+SMTP_EMAIL = os.environ.get("SMTP_EMAIL")
+SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD")
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 
 client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
 @app.route('/')
-def index1():
-    return render_template('index1.html', key_id=RAZORPAY_KEY_ID)
+def index():
+    return render_template('index.html')
 
 @app.route('/payment')
 def payment():
@@ -47,7 +50,7 @@ def dashboard():
     return render_template('dashboard.html')
 
 def send_success_email(to_email):
-    subject = "✅ EnglishPr0 Course Access - Payment Successful"
+    subject = "✅ EnglishPro Course Access - Payment Successful"
     body = '''
 Dear Student,
 
@@ -58,21 +61,15 @@ Here are your course access links:
 🎥 Video Lessons: https://drive.google.com/drive/folders/1EBzBgWNDUwv-gPvHZFO9pMP0Cs-e6hYU
 📚 IELTS Pack: https://drive.google.com/drive/folders/1iqee_2QBbODOu8xis9BqPTOT0FHogzCi
 
-Thanks for joining EnglishPr0!
+Thanks for joining EnglishPro!
 '''
+
     msg = MIMEText(body)
     msg['Subject'] = subject
     msg['From'] = SMTP_EMAIL
     msg['To'] = to_email
 
-    try:
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            server.starttls()
-            server.login(SMTP_EMAIL, SMTP_PASSWORD)
-            server.sendmail(SMTP_EMAIL, to_email, msg.as_string())
-            print(f"Email sent to {to_email}")
-    except Exception as e:
-        print(f"Failed to send email: {e}")
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+        server.starttls()
+        server.login(SMTP_EMAIL, SMTP_PASSWORD)
+        server.sendmail(SMTP_EMAIL, to_email, msg.as_string())
