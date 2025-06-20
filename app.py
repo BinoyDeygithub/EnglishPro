@@ -5,7 +5,7 @@ import smtplib
 from email.mime.text import MIMEText
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = 'VwJuBCjJ8qpORiCKreedSc4o'
 
 RAZORPAY_KEY_ID =os.environ.get( "rzp_live_R2HYh1NSRFpo3u")
 RAZORPAY_KEY_SECRET = os.environ.get("VwJuBCjJ8qpORiCKreedSc4o")
