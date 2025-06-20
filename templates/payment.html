@@ -1,65 +1,49 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %}
+{% block content %}
 <section class="text-center p-10">
-  <h1 class="text-4xl font-bold text-blue-700">Welcome to EnglishPr0</h1>
-  <p class="mt-4 text-lg">Premium Spoken English Course – Just ₹89</p>
-  <form id="pay-form" class="mt-6">
-    <input
-      type="email"
-      id="user-email"
-      placeholder="Enter your email"
-      required
-      class="border p-2 rounded w-full max-w-md"
-    />
-    <button type="submit" class="mt-4 px-6 py-3 bg-blue-600 text-white rounded">
-      Pay & Access
-    </button>
+  <h1 class="text-4xl font-bold text-blue-700">Payment for EnglishPro Course</h1>
+  <form id="pay-form" class="mt-6 max-w-md mx-auto">
+    <input type="email" id="user-email" placeholder="Enter your email" required class="border p-2 rounded w-full" />
+    <button type="submit" class="mt-4 px-6 py-3 bg-blue-600 text-white rounded">Pay ₹89</button>
   </form>
   <div id="success-message" class="mt-6 hidden">
-    <p class="text-green-600 font-bold">✅ Payment Verified!</p>
-    <a
-      href="/dashboard"
-      class="inline-block mt-4 bg-green-600 text-white px-4 py-2 rounded"
-      >Go to Course</a
-    >
+    <p class="text-green-600 font-bold">✅ Payment Successful!</p>
+    <a href="/dashboard" class="inline-block mt-4 bg-green-600 text-white px-4 py-2 rounded">Go to Course</a>
   </div>
 </section>
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-  document.getElementById("pay-form").onsubmit = function (e) {
-    e.preventDefault();
-    const email = document.getElementById("user-email").value;
-
-    const options = {
-      key: "rzp_live_R2HYh1NSRFpo3u",
-
-      amount: 100,
-      currency: "INR",
-      name: "EnglishPr0",
-      description: "Premium Course",
-      prefill: { email: email },
-      handler: function (response) {
-        fetch("/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            razorpay_payment_id: response.razorpay_payment_id,
-            email: email,
-          }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.status === "success") {
-              document
-                .getElementById("success-message")
-                .classList.remove("hidden");
-            } else {
-              alert("Payment failed.");
-            }
-          });
-      },
-    };
-    const rzp = new Razorpay(options);
-    rzp.open();
+document.getElementById("pay-form").onsubmit = function (e) {
+  e.preventDefault();
+  const email = document.getElementById("user-email").value;
+  const options = {
+    key: "{{ key_id }}",
+    amount: 100,
+    currency: "INR",
+    name: "EnglishPro",
+    description: "Spoken English Course",
+    handler: function (response) {
+      fetch("/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ razorpay_payment_id: response.razorpay_payment_id, email })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          document.getElementById("pay-form").classList.add("hidden");
+          document.getElementById("success-message").classList.remove("hidden");
+        } else {
+          alert("Payment failed. Try again.");
+        }
+      });
+    },
+    prefill: { email },
+    theme: { color: "#3399cc" }
   };
+  const rzp = new Razorpay(options);
+  rzp.open();
+};
 </script>
 {% endblock %}
