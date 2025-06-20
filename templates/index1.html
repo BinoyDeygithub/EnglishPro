@@ -478,14 +478,14 @@
     window.location.href = "payment.html"; // change URL as needed
   };
 </script>
+
 <script>
   document.getElementById("pay-form").onsubmit = function (e) {
     e.preventDefault();
     const email = document.getElementById("user-email").value;
-
     const options = {
-      key: "{{ key_id }}",
-      amount: 100,
+      key: "{{ rzp_live_R2HYh1NSRFpo3u }}",
+      amount: 9900, // ₹99
       currency: "INR",
       name: "EnglishPr0",
       description: "Premium Spoken English Course",
@@ -496,28 +496,38 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature,
             email: email,
           }),
         })
-          .then((res) => res.json())
-          .then((data) => {
+          .then(res => res.json())
+          .then(data => {
             if (data.status === "success") {
-              document
-                .getElementById("success-message")
-                .classList.remove("hidden");
-              setTimeout(() => {
-                window.location.href = "/dashboard";
-              }, 2000);
+              document.getElementById("success-message").classList.remove("hidden");
+              setTimeout(() => { window.location.href = "/dashboard"; }, 2000);
             } else {
               alert("❌ Payment failed. Please try again.");
             }
+          })
+          .catch(err => {
+            console.error(err);
+            alert("❌ Verification error. Please contact support.");
           });
-      },
+      }
     };
 
     const rzp = new Razorpay(options);
+
+    rzp.on('payment.failed', function (response) {
+      console.error("Payment failed", response.error);
+      alert("❌ Payment failed: " + response.error.description);
+      // Optionally navigate back or let user retry
+    });
+
     rzp.open();
   };
 </script>
 
+<!--  -->
 {% endblock %}
